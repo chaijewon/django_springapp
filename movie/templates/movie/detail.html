@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        .row {
+            margin:0px auto;
+        }
+    </style>
+</head>
+<body>
+    {% include 'movie/header.html' %}
+    <div style="height:30px"></div>
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-sm-7">
+           <h1 class="text-center">&lt;{{title}}&gt;상세보기</h1>
+            <table class="table">
+              <tr>
+                  <td class="text-center">
+                      <iframe src="http://youtube.com/embed/{{key}}" width="800" height="350"></iframe>
+                  </td>
+              </tr>
+          </table>
+          <table class="text-center">
+              <tr>
+                  <td class="text-center" width="30%" rowspan="4">
+                      <img src="{{poster}}" width="130" height="150">
+                  </td>
+                  <td width="70%" colspan="2">{{title}}</td>
+              </tr>
+              <tr>
+                  <td width="20%" class="text-right">상영일</td>
+                  <td width="50%">{{regdate}}</td>
+              </tr>
+              <tr>
+                  <td width="20%" class="text-right">장르</td>
+                  <td width="50%">{{genre}}</td>
+              </tr>
+              <tr>
+                  <td width="20%" class="text-right">등급</td>
+                  <td width="50%">{{grade}}</td>
+              </tr>
+              <tr>
+                  <td colspan="3">
+                      {{story|slice:"300"}}
+                  </td>
+              </tr>
+              <tr>
+                  <td colspan="3" class="text-right">
+                      <button class="btn btn-sm btn-danger" onclick="javascript:history.back()">목록</button>
+                  </td>
+              </tr>
+          </table>
+      </div>
+          <div class="col-sm-5">
+              <h1 class="text-center">댓글</h1>
+          </div>
+      </div>
+    </div>
+</body>
+</html>

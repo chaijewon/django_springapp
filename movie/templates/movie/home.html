@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="http://unpkg.com/axios/dist/axios.min.js"></script>
+    <style type="text/css">
+        .row {
+            margin:0px auto;
+        }
+    </style>
+</head>
+<!--
+   artmovieYn: (...)
+audiCnt: (...)
+director: (...)
+dtNm: (...)
+endDate: (...)
+endYearDate: (...)
+genre: (...)
+indieYn: (...)
+movieCd: (...)
+movieNm: (...)
+movieNmEn: (...)
+moviePrdtStat: (...)
+movieType: (...)
+multmovieYn: (...)
+openDt: (...)
+prNm: (...)
+prdtYear: (...)
+rank: (...)
+rankInten: (...)
+rankOldAndNew: (...)
+repNationCd: (...)
+rownum: (...)
+salesAmt: (...)
+scrCnt: (...)
+showCnt: (...)
+showDt: (...)
+showTm: (...)
+showTs: (...)
+startDate: (...)
+startYearDate: (...)
+synop: (...)
+thumbUrl: "/common/mast/movie/2021/04/thumb/thn_9520edbd1421425b8ca2fac6ebddf127.jpg"
+watchGradeNm: (...)
+
+개봉일
+2021-03-04
+제작상태
+개봉
+영화구분
+일반영화
+관람등급
+전체관람가
+상영시간
+114분 6초
+제작국가
+미국
+감독
+돈 홀,카를로스 로페즈 에스트라다
+장르
+애니메이션,액션,어드벤처
+배급사
+월트디즈니컴퍼니코리아
+-->
+<body>
+    {% include 'movie/header.html' %}
+    <div style="height:30px"></div>
+    <div class="container-fluid" id="app">
+        <div class="row">
+            <div class="text-right">
+                {% if not result %}
+                    <form method="post" action="login/">
+                        {% csrf_token %}
+                          ID:<input type="text" name="id" size="10" class="input-sm">
+                          &nbsp;
+                          Password:<input type="password" name="pwd" size="10" class="input-sm">
+                          &nbsp;
+                          <input type="submit" value="로그인" class="btn btn-sm btn-danger">
+                     </form>
+                {% else %}
+                   <form method="post" action="logout/">
+                       {% csrf_token %}
+                      {{name}}님 로그인되었습니다 <input type="submit" value="로그인" class="btn btn-sm btn-danger">
+                   </form>
+                {% endif %}
+            </div>
+        </div>
+      <div class="row">
+         <div class="text-center">
+             <button class="btn btn-lg btn-danger" v-on:click="change(1)">박스오피스</button>
+             <button class="btn btn-lg btn-success" v-on:click="change(2)">실시간 예매율</button>
+             <button class="btn btn-lg btn-primary" v-on:click="change(3)">좌석 점유율</button>
+             <button class="btn btn-lg btn-info" v-on:click="change(4)">온라인 이용순위</button>
+         </div>
+      </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-6">
+              <table class="table table-striped">
+                  <thead>
+                    <tr class="success">
+                        <th class="text-center">순위</th>
+                        <th class="text-center"></th>
+                        <th class="text-center">영화명</th>
+                        <th class="text-center">장르</th>
+                        <th class="text-center">감독</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                     <tr v-for="m in movie" v-on:mouseover="movie_detail(m.rank)">
+                         <th class="text-center">[[m.rank]]</th>
+                         <th class="text-center">
+                             <img :src="'https://www.kobis.or.kr/'+m.thumbUrl" width="30" height="30">
+                         </th>
+                         <th class="text-left">[[m.movieNm]]</th>
+                         <th class="text-left">[[m.genre]]</th>
+                         <th class="text-left">[[m.director]]</th>
+                     </tr>
+                  </tbody>
+              </table>
+            </div>
+            <div class="col-sm-6">
+               <table class="table" v-show="isShow">
+                  <tr>
+                      <td class="text-center" width="30%" rowspan="8">
+                          <img :src="'https://www.kobis.or.kr/'+detail.thumbUrl" width="100%">
+                      </td>
+                      <td colspan="2">
+                          <span style="font-size:30px">[[detail.movieNm]]</span><br>
+                          <sub>[[detail.movieNmEn]]</sub>
+                      </td>
+                  </tr>
+                   <tr>
+                       <td class="text-right" width="20%">개봉일</td>
+                       <td width="50%">[[detail.startYearDate]]</td>
+                   </tr>
+                   <tr>
+                       <td class="text-right" width="20%">영화구분</td>
+                       <td width="50%">[[detail.movieType]]</td>
+                   </tr>
+                   <tr>
+                       <td class="text-right" width="20%">관람등급</td>
+                       <td width="50%">[[detail.watchGradeNm]]</td>
+                   </tr>
+                   <tr>
+                       <td class="text-right" width="20%">상영시간</td>
+                       <td width="50%">[[detail.showTm]]</td>
+                   </tr>
+                   <tr>
+                       <td class="text-right" width="20%">제작국가</td>
+                       <td width="50%">[[detail.repNationCd]]</td>
+                   </tr>
+                   <tr>
+                       <td class="text-right" width="20%">감독</td>
+                       <td width="50%">[[detail.director]]</td>
+                   </tr>
+                   <tr>
+                       <td class="text-right" width="20%">장르</td>
+                       <td width="50%">[[detail.genre]]</td>
+                   </tr>
+                   <tr>
+                       <td colspan="3">
+                           [[detail.synop]]
+                       </td>
+                   </tr>
+               </table>
+            </div>
+        </div>
+        <script>
+            new Vue({
+               delimiters:['[[',']]'],
+               el:'#app',
+               data:{
+                    movie:[],
+                    no:1,
+                    detail:{},
+                    isShow:false
+               },
+               methods:{
+                   change:function(no){
+                       this.no=no
+                       axios.get("http://localhost/web/movie/home.do",{
+                              params: {
+                                 no:this.no
+                              }
+                          }).then(response=>{
+                              this.movie=response.data
+                              console.log(this.movie)
+                          })
+                   },
+                   movie_detail:function(rank){
+                      this.isShow=true
+                      axios.get("http://localhost/web/movie/detail.do",{
+                         params:{
+                             no:this.no,
+                             rank:rank
+                         }
+                      }).then(response=>{
+                           this.detail=response.data
+                           console.log(this.detail)
+                      })
+                   }
+               },
+               mounted:function(){
+                  axios.get("http://localhost/web/movie/home.do",{
+                      params: {
+                         no:this.no
+                      }
+                  }).then(response=>{
+                      this.movie=response.data
+                      console.log(this.movie)
+                  })
+               }
+            })
+        </script>
+    </div>
+</body>
+</html>

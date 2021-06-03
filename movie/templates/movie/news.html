@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="http://unpkg.com/axios/dist/axios.min.js"></script>
+    <style type="text/css">
+        .row {
+            margin:0px auto
+        }
+    </style>
+</head>
+<body>
+    {% include 'movie/header.html' %}
+    <div style="height:30px"></div>
+    <div class="container" id="app">
+      <div class="row">
+        <h1 class="text-center">네이버 영화뉴스</h1>
+          <table class="table">
+              <tr>
+                  <td>
+                      Search:<input type="text" size="25" class="input-sm" v-model="fd">
+                      <button class="btn btn-sm btn-danger" v-on:click="find()">검색</button>
+                  </td>
+              </tr>
+          </table>
+          <hr>
+          <table class="table" v-for="news in news_data">
+              <tr>
+                  <td><b>[[news.title]]</b></td>
+              </tr>
+              <tr>
+                  <td><a :href="news.link">[[news.desc]]</a></td>
+              </tr>
+              <tr>
+                  <td class="text-right">[[news.author]]</td>
+              </tr>
+          </table>
+      </div>
+      <script>
+          new Vue({
+             delimiters:['[[',']]'],
+             el:'#app',
+             // 멤버변수 = this.
+             data:{
+                   news_data:[],
+                   fd:'영화'
+             },
+             // 시작과 동시에 동작 : 자동으로 호출
+             // created (new Vue()생성) , html을 메모리에 저장완료 상태 (mounted) , updated (수정) , destoryed
+             mounted:function(){
+                axios.get("http://localhost/web/movie/news.do").then(response=>{
+                       this.news_data=response.data
+                       console.log(this.news_data)
+                })
+             },
+             // 사용자 정의 함수 (이벤트 => 버튼 클릭 , 마우스(hover), change) => v-on:이벤트명="함수"
+             methods:{
+                 find:function(){
+                    axios.get("http://localhost/web/movie/news.do",{
+                        params:{
+                           fd:this.fd
+                        }
+                    }).then(response=>{
+                         this.news_data=response.data
+                    })
+                 }
+             }
+          })
+      </script>
+    </div>
+</body>
+</html>
